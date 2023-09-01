@@ -37,7 +37,7 @@ class Video(models.Model):
     - duration: The total length or runtime of the video.
     - views: The number of times the video has been viewed.
     - likes: The number of likes the video has received.
-    - dislikes: The number of dislikes the video has received.
+    - dislikes: The number of dislikes the video has received. (optional)
     - download: A flag indicating if the video is available for download.
     - author: A reference to the YouTube user who authored or uploaded the video.
     - requested_by: A reference to the Django user who requested this video to be added.
@@ -52,7 +52,7 @@ class Video(models.Model):
     duration = models.DurationField()
     views = models.PositiveIntegerField(default=0)
     likes = models.PositiveIntegerField(default=0)
-    dislikes = models.PositiveIntegerField(default=0)
+    dislikes = models.PositiveIntegerField(default=0, blank=True, null=True)
     # Indicates if the video is available for download
     download = models.BooleanField(default=False)
     author = models.ForeignKey(
