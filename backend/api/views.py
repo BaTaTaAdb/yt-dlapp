@@ -4,6 +4,7 @@ from videos_manager.models import Video, YTUser
 from .serializers.video_serializer import VideoSerializer
 from .serializers.ytuser_serializer import YTUserSerializer
 from .serializers.video_link_serialiazer import VideoLinkSerializer
+from videos_manager.downloader import *
 
 
 class VideoListCreateView(generics.ListCreateAPIView):
@@ -30,8 +31,19 @@ class VideoLinkCreateView(generics.CreateAPIView):
 
         link = serializer.validated_data['link']
 
-        # Create a new Video instance with the provided link
-        video = Video(video_link=link)
-        video.save()  # This will trigger the post_save signal
+        # Parse the link to extract video and user information
+        yt = create_yt(link)
+
+        # If channel id already exists, then fetch from youtube
+        ytuser, created = YTUser.objects.get_or_create(
+            user_id=yt.channel_id, defaults={'name': yt.author})
+
+        if created:
+            ytuser.latest_video = get_latest_video(yt.channel_url)
+            ytuser.save()
+
+        # Create a new Video instance with the provided link and associated YTUser
+        video = Video(video_link=link, ytuser=ytuser)
+        video.save()  # This will trigger the post_save signal if you have one
 
         return Response({"message": "Video and YTUser created successfully"}, status=status.HTTP_201_CREATED)
