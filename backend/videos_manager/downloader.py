@@ -1,6 +1,12 @@
 from pytube import YouTube, StreamQuery, Stream
 import os
 import re
+from pytube import Channel
+
+
+def get_latest_video(channel_url) -> str:
+    channel = Channel(channel_url)
+    return channel.video_urls[0]
 
 
 def remove_special_characters(s):
@@ -35,16 +41,16 @@ def get_max_res(video_streams: StreamQuery, audio_streams: StreamQuery = None, f
         os.remove(file)
 
 
-def get_video_streams(yt: YouTube):
+def get_video_streams(yt: YouTube) -> StreamQuery:
     video_streams = yt.streams.order_by(
         "resolution").filter(type="video").desc()
     return {"video_streams": video_streams, "title": yt.title}
 
 
-def get_audio_streams(yt: YouTube):
+def get_audio_streams(yt: YouTube) -> StreamQuery:
     audio_streams = yt.streams.order_by("abr").filter(type="audio").desc()
     return audio_streams
 
 
-def create_yt(url: str):
+def create_yt(url: str) -> YouTube:
     return YouTube(url)

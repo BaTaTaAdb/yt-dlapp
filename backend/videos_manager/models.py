@@ -8,17 +8,17 @@ class YTUser(models.Model):
 
     Attributes:
     - name: The name of the YouTube user or channel.
-    - youtube_link: The direct link to the YouTube user's channel. Ensures uniqueness.
-    - subscribers_count: The number of subscribers the YouTube user has.
+    - user_id: The id of YouTube user's channel. Ensures uniqueness.    
     - latest_video: The link to the most recent video uploaded by the user.
     - latest_downloaded_video: ForeignKey to a Video object
     """
     name = models.CharField(max_length=255)
-    youtube_link = models.URLField(unique=True)
-    subscribers_count = models.PositiveIntegerField(default=0)
+    user_id = models.CharField(max_length=255, unique=True)
     latest_video = models.URLField(blank=True, null=True)
     latest_downloaded_video = models.ForeignKey(
-        "Video", on_delete=models.SET_NULL, related_name='downloaded_by_users', blank=True, null=True)
+        "Video", on_delete=models.SET_NULL,
+        related_name='downloaded_by_users',
+        blank=True, null=True)
 
     def __str__(self):
         return self.name
@@ -40,13 +40,13 @@ class Video(models.Model):
     - likes: The number of likes the video has received.
     - dislikes: The number of dislikes the video has received. (optional)
     - download: A flag indicating if the video is available for download.
-    - author: A reference to the YouTube user who authored or uploaded the video.
+    - ytuser: A reference to the YouTube user who authored or uploaded the video.
     - requested_by: A reference to the Django user who requested this video to be added.
     """
     title = models.CharField(max_length=255)
     description = models.TextField(blank=True, null=True)
     upload_date = models.DateTimeField(auto_now_add=True)
-    video_file = models.FileField(upload_to='videos/')
+    video_file = models.FileField(blank=True, null=True)
     video_link = models.URLField()
     thumbnail = models.ImageField(
         upload_to='thumbnails/', blank=True, null=True)
@@ -56,8 +56,8 @@ class Video(models.Model):
     dislikes = models.PositiveIntegerField(default=0, blank=True, null=True)
     # Indicates if the video is available for download
     download = models.BooleanField(default=False)
-    author = models.ForeignKey(
-        YTUser, on_delete=models.CASCADE, related_name="videos_authored")
+    ytuser = models.ForeignKey(
+        YTUser, on_delete=models.CASCADE, related_name="videos", null=True, blank=True)
     requested_by = models.ForeignKey(
         User, on_delete=models.CASCADE, related_name="videos_requested")
 
