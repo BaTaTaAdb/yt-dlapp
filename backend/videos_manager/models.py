@@ -8,16 +8,17 @@ class YTUser(models.Model):
 
     Attributes:
     - name: The name of the YouTube user or channel.
-    - email: The email associated with the YouTube account. Ensures uniqueness.
     - youtube_link: The direct link to the YouTube user's channel. Ensures uniqueness.
     - subscribers_count: The number of subscribers the YouTube user has.
     - latest_video: The link to the most recent video uploaded by the user.
+    - latest_downloaded_video: ForeignKey to a Video object
     """
     name = models.CharField(max_length=255)
-    email = models.EmailField(unique=True)
     youtube_link = models.URLField(unique=True)
     subscribers_count = models.PositiveIntegerField(default=0)
     latest_video = models.URLField(blank=True, null=True)
+    latest_downloaded_video = models.ForeignKey(
+        "Video", on_delete=models.SET_NULL, related_name='downloaded_by_users', blank=True, null=True)
 
     def __str__(self):
         return self.name
