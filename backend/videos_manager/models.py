@@ -3,6 +3,16 @@ from django.contrib.auth.models import User
 
 
 class YTUser(models.Model):
+    """
+    Represents a YouTube user or channel.
+
+    Attributes:
+    - name: The name of the YouTube user or channel.
+    - email: The email associated with the YouTube account. Ensures uniqueness.
+    - youtube_link: The direct link to the YouTube user's channel. Ensures uniqueness.
+    - subscribers_count: The number of subscribers the YouTube user has.
+    - latest_video: The link to the most recent video uploaded by the user.
+    """
     name = models.CharField(max_length=255)
     email = models.EmailField(unique=True)
     youtube_link = models.URLField(unique=True)
@@ -14,6 +24,24 @@ class YTUser(models.Model):
 
 
 class Video(models.Model):
+    """
+    Represents a video, potentially from a YouTube user.
+
+    Attributes:
+    - title: The title of the video.
+    - description: A brief description or summary of the video.
+    - upload_date: The date and time when the video was uploaded.
+    - video_file: The actual video file, stored in the 'videos/' directory.
+    - video_link: A direct link to the video, possibly on YouTube or another platform.
+    - thumbnail: An image representing the video, stored in the 'thumbnails/' directory.
+    - duration: The total length or runtime of the video.
+    - views: The number of times the video has been viewed.
+    - likes: The number of likes the video has received.
+    - dislikes: The number of dislikes the video has received.
+    - download: A flag indicating if the video is available for download.
+    - author: A reference to the YouTube user who authored or uploaded the video.
+    - requested_by: A reference to the Django user who requested this video to be added.
+    """
     title = models.CharField(max_length=255)
     description = models.TextField(blank=True, null=True)
     upload_date = models.DateTimeField(auto_now_add=True)
