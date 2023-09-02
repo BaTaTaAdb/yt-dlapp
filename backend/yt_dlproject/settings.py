@@ -39,7 +39,8 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'videos_manager',
     'rest_framework',
-    'api'
+    'api',
+    'sendfile'
 ]
 
 MIDDLEWARE = [
