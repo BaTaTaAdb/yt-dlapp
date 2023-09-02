@@ -1,4 +1,5 @@
 from django.shortcuts import get_object_or_404
+from django.core.exceptions import PermissionDenied
 from rest_framework import generics, status
 from rest_framework.response import Response
 from videos_manager.models import Video, YTUser
@@ -13,6 +14,9 @@ class VideoListCreateView(generics.ListCreateAPIView):
     queryset = Video.objects.all()
     serializer_class = VideoSerializer
 
+    def get_queryset(self):
+        return Video.objects.filter(accessed_by=self.request.user)
+
 
 class VideoRetrieveUpdateDestroyView(generics.RetrieveUpdateDestroyAPIView):
     queryset = Video.objects.all()
@@ -20,7 +24,11 @@ class VideoRetrieveUpdateDestroyView(generics.RetrieveUpdateDestroyAPIView):
 
     def get_object(self):
         video_id = self.kwargs['video_id']
-        return get_object_or_404(Video, video_id=video_id)
+        video = get_object_or_404(Video, video_id=video_id)
+        if self.request.user not in video.accessed_by.all():
+            raise PermissionDenied(
+                "You do not have permission to access this video.")
+        return video
 
 
 class YTUserCreateView(generics.ListCreateAPIView):
@@ -64,8 +72,9 @@ class VideoLinkCreateView(generics.CreateAPIView):
                        video_id=yt.video_id,
                        file_name=remove_special_characters(yt.title)):
             video.download = True
-            video.video_file = f"./videos/{yt.author}/{remove_special_characters(yt.title)}.mp4"
+            video.video_file = f"./videos/{yt.channel_id}/{remove_special_characters(yt.title)}.mp4"
             video.save()
+            video.accessed_by.add(user)
             return Response({"message": "Video and YTUser created successfully"},
                             status=status.HTTP_201_CREATED)
         else:

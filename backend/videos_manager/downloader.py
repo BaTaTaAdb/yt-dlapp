@@ -8,7 +8,13 @@ import shutil
 def get_latest_video(channel_url) -> str:
     channel = Channel(channel_url)
     videos_gen = channel.videos
-    return next(videos_gen).video_id
+    try:
+        ret_value = next(videos_gen).video_id
+    except KeyboardInterrupt:
+        pass
+    except Exception:
+        ret_value = None
+    return ret_value
 
 
 def remove_special_characters(s):

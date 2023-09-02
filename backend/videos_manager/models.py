@@ -40,6 +40,7 @@ class Video(models.Model):
     - download: A flag indicating if the video is available for download.
     - ytuser: A reference to the YouTube user who authored or uploaded the video.
     - requested_by: A reference to the Django user who requested this video to be added.
+    - accessed_by: A referente to the Django users who have access to this video.
     """
     title = models.CharField(max_length=255)
     description = models.TextField(blank=True, null=True)
@@ -56,6 +57,7 @@ class Video(models.Model):
         YTUser, on_delete=models.CASCADE, related_name="videos", null=True, blank=True)
     requested_by = models.ForeignKey(
         User, on_delete=models.CASCADE, related_name="videos_requested")
+    accessed_by = models.ManyToManyField(User, related_name="videos_accessed")
 
     def __str__(self):
         return self.title
