@@ -59,6 +59,7 @@ class VideoLinkCreateView(generics.CreateAPIView):
                        audio_streams=get_audio_streams(yt),
                        video_id=yt.video_id,
                        file_name=remove_special_characters(yt.title)):
+            video.download = True
             video.save()
             return Response({"message": "Video and YTUser created successfully"},
                             status=status.HTTP_201_CREATED)

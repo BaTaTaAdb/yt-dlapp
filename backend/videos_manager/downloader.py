@@ -39,6 +39,7 @@ def get_max_res(video_streams: StreamQuery, video_id: str, audio_streams: Stream
         os.system(
             'ffmpeg -i "{}" -i "{}" -c:v copy -c:a aac -strict experimental "{}".mp4'
             .format(*files, pos_file_name))
+    os.chdir(f"../../")
     if not os.path.exists(f"./videos/{video_id}"):
         os.makedirs(f"./videos/{video_id}")
     shutil.move(f"./videos/temp/{pos_file_name}.mp4",
