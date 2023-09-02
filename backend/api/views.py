@@ -8,6 +8,7 @@ from .serializers.ytuser_serializer import YTUserSerializer
 from .serializers.video_link_serialiazer import VideoLinkSerializer
 from videos_manager.downloader import *
 from datetime import timedelta
+from sendfile import sendfile
 
 
 class VideoListCreateView(generics.ListCreateAPIView):
@@ -79,3 +80,19 @@ class VideoLinkCreateView(generics.CreateAPIView):
                             status=status.HTTP_201_CREATED)
         else:
             return Response({"error": "Error while downloading video"}, status=status.HTTP_400_BAD_REQUEST)
+
+
+class VideoDownloadView(generics.RetrieveAPIView):
+    queryset = Video.objects.all()
+    lookup_field = 'video_id'
+
+    def retrieve(self, request, *args, **kwargs):
+        video = self.get_object()
+
+        # Check if the user has permission to access the video
+        if request.user not in video.accessed_by.all():
+            raise PermissionDenied(
+                "You do not have permission to access this video.")
+
+        # Serve the video file
+        return sendfile(request, video.video_file.path, attachment=True)
