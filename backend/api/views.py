@@ -1,3 +1,4 @@
+from django.shortcuts import get_object_or_404
 from rest_framework import generics, status
 from rest_framework.response import Response
 from videos_manager.models import Video, YTUser
@@ -6,7 +7,6 @@ from .serializers.ytuser_serializer import YTUserSerializer
 from .serializers.video_link_serialiazer import VideoLinkSerializer
 from videos_manager.downloader import *
 from datetime import timedelta
-import traceback
 
 
 class VideoListCreateView(generics.ListCreateAPIView):
@@ -17,6 +17,10 @@ class VideoListCreateView(generics.ListCreateAPIView):
 class VideoRetrieveUpdateDestroyView(generics.RetrieveUpdateDestroyAPIView):
     queryset = Video.objects.all()
     serializer_class = VideoSerializer
+
+    def get_object(self):
+        video_id = self.kwargs['video_id']
+        return get_object_or_404(Video, video_id=video_id)
 
 
 class YTUserCreateView(generics.ListCreateAPIView):
@@ -60,6 +64,7 @@ class VideoLinkCreateView(generics.CreateAPIView):
                        video_id=yt.video_id,
                        file_name=remove_special_characters(yt.title)):
             video.download = True
+            video.video_file = f"./videos/{yt.author}/{remove_special_characters(yt.title)}.mp4"
             video.save()
             return Response({"message": "Video and YTUser created successfully"},
                             status=status.HTTP_201_CREATED)
