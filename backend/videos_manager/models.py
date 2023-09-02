@@ -33,12 +33,10 @@ class Video(models.Model):
     - description: A brief description or summary of the video.
     - upload_date: The date and time when the video was uploaded.
     - video_file: The actual video file, stored in the 'videos/' directory.
-    - video_link: A direct link to the video, possibly on YouTube or another platform.
+    - video_id: The id of the video on YouTube.
     - thumbnail: An image representing the video, stored in the 'thumbnails/' directory.
     - duration: The total length or runtime of the video.
     - views: The number of times the video has been viewed.
-    - likes: The number of likes the video has received.
-    - dislikes: The number of dislikes the video has received. (optional)
     - download: A flag indicating if the video is available for download.
     - ytuser: A reference to the YouTube user who authored or uploaded the video.
     - requested_by: A reference to the Django user who requested this video to be added.
@@ -47,13 +45,11 @@ class Video(models.Model):
     description = models.TextField(blank=True, null=True)
     upload_date = models.DateTimeField(auto_now_add=True)
     video_file = models.FileField(blank=True, null=True)
-    video_link = models.URLField()
+    video_id = models.CharField(max_length=255, unique=True)
     thumbnail = models.ImageField(
         upload_to='thumbnails/', blank=True, null=True)
     duration = models.DurationField()
     views = models.PositiveIntegerField(default=0)
-    likes = models.PositiveIntegerField(default=0)
-    dislikes = models.PositiveIntegerField(default=0, blank=True, null=True)
     # Indicates if the video is available for download
     download = models.BooleanField(default=False)
     ytuser = models.ForeignKey(

@@ -7,9 +7,9 @@ from .models import Video, YTUser
 
 @admin.register(Video)
 class VideoAdmin(admin.ModelAdmin):
-    list_display = ('title', 'upload_date', 'views',
+    list_display = ('title', 'upload_date', 'views', 'video_id',
                     'download', 'ytuser', 'requested_by')
-    search_fields = ('title', 'ytuser__username', 'description')
+    search_fields = ('title', 'ytuser__username', 'description', 'video_id')
 
 
 @admin.register(YTUser)
